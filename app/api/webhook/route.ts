@@ -1,23 +1,25 @@
 import { NextResponse } from 'next/server';
 
-// စာတွေကို ခေတ္တသိမ်းထားမယ့်နေရာ
 let messages: any[] = [];
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        console.log("🔥 NEW MESSAGE FROM TELEGRAM:", body); // ဒါက Logs မှာ ပေါ်လာစေမှာပါ
+        console.log("🔥 RECEIVED DATA:", body);
 
-        if (body.message && body.message.text) {
+        // Channel က စာဖြစ်ဖြစ်၊ Bot ဆီ တိုက်ရိုက်ပို့တဲ့ စာဖြစ်ဖြစ် လက်ခံမယ်
+        const msg = body.channel_post || body.message;
+
+        if (msg && msg.text) {
             messages.push({
                 id: Date.now(),
-                text: body.message.text,
-                user: body.message.from.first_name || 'Unknown'
+                // Channel စာဆိုရင် Channel နာမည်ပြမယ်၊ Chat ဆိုရင် လူနာမည်ပြမယ်
+                user: body.channel_post ? body.channel_post.chat.title : msg.from.first_name,
+                text: msg.text
             });
         }
         return NextResponse.json({ ok: true });
     } catch (error) {
-        console.error("❌ Error in Webhook:", error);
         return NextResponse.json({ ok: false }, { status: 500 });
     }
 }
