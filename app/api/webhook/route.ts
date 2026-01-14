@@ -1,22 +1,27 @@
 import { NextResponse } from 'next/server';
 
-// စာတွေကို ခေတ္တသိမ်းထားမယ့် array (In-memory array)
+// စာတွေကို ခေတ္တသိမ်းထားမယ့်နေရာ
 let messages: any[] = [];
 
 export async function POST(request: Request) {
-    const body = await request.json();
-    if (body.message) {
-        // စာအသစ်ဝင်လာရင် array ထဲ ထည့်မယ်
-        messages.push({
-            id: Date.now(),
-            text: body.message.text,
-            user: body.message.from.first_name
-        });
+    try {
+        const body = await request.json();
+        console.log("🔥 NEW MESSAGE FROM TELEGRAM:", body); // ဒါက Logs မှာ ပေါ်လာစေမှာပါ
+
+        if (body.message && body.message.text) {
+            messages.push({
+                id: Date.now(),
+                text: body.message.text,
+                user: body.message.from.first_name || 'Unknown'
+            });
+        }
+        return NextResponse.json({ ok: true });
+    } catch (error) {
+        console.error("❌ Error in Webhook:", error);
+        return NextResponse.json({ ok: false }, { status: 500 });
     }
-    return NextResponse.json({ ok: true });
 }
 
 export async function GET() {
-    // Website က လှမ်းတောင်းရင် စာရင်းကို ပြန်ပေးမယ်
     return NextResponse.json(messages);
 }
