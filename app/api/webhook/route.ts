@@ -1,7 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
-// Key များကို Environment Variables သို့မဟုတ် string အဖြစ် သေချာခွဲရေးပါ
 const SUPABASE_URL = 'https://nfngeklmyyvvrqblvgcg.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_BfAagtaG1jv2B0TegSXCZQ_Cp1Y2mRM'; 
 
@@ -15,15 +14,18 @@ export async function POST(request: Request) {
     if (post && post.text) {
       const { error } = await supabase
         .from('messages')
-        .insert([{ 
-          user: post.chat?.title  post.from?.first_name  'News Bot', 
-          text: post.text 
-        }]);
+        .insert([
+          { 
+            user: post.chat?.title  post.from?.first_name  'News Bot', 
+            text: post.text 
+          }
+        ]);
 
       if (error) throw error;
     }
     return NextResponse.json({ ok: true });
   } catch (err: any) {
+    console.error('Webhook Error:', err.message);
     return NextResponse.json({ ok: false, error: err.message }, { status: 500 });
   }
 }
