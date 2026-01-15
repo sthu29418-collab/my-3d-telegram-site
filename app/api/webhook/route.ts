@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
 const SUPABASE_URL = 'https://nfngeklmyyvvrqblvgcg.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_BfAagtaG1jv2BOTegSXCZQ_Cp1Y2mRM'; // မင်းရဲ့ Anon Key ပြန်ထည့်ပါ
+const SUPABASE_ANON_KEY = 'sb_publishable_BfAagtaG1jv2BOTegSXCZQ_Cp1Y2mRM'; // မင်းရဲ့ Anon Key ကိုပဲ ပြန်ထည့်ပါ
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     
-    // လူပို့တာရော၊ Channel က Auto တက်တာရော နှစ်မျိုးလုံးဖမ်းမယ်
+    // လူပို့တာရော၊ Channel က Auto တက်တာရော နှစ်မျိုးလုံးကို လက်ခံမယ်
     const post = body.channel_post || body.message;
 
     if (post && post.text) {
@@ -23,15 +23,12 @@ export async function POST(request: Request) {
           }
         ]);
 
-      if (error) {
-        console.error('Supabase Error:', error);
-        return NextResponse.json({ ok: false, error: error.message });
-      }
+      if (error) throw error;
     }
 
     return NextResponse.json({ ok: true });
-  } catch (err: any) {
+  } catch (err) {
     console.error('Webhook Error:', err);
-    return NextResponse.json({ ok: false, error: err.message }, { status: 500 });
+    return NextResponse.json({ ok: false }, { status: 500 });
   }
 }
